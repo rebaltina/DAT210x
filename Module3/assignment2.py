@@ -11,37 +11,33 @@ matplotlib.style.use('ggplot')
 # It's located at 'Datasets/wheat.data'
 # 
 # .. your code here ..
-
-
+df = pd.read_csv ('c:/Users/User/workspace/DAT210x/Module3/Datasets/wheat.data')
 #
 # TODO: Create a 2d scatter plot that graphs the
 # area and perimeter features
 # 
 # .. your code here ..
-
-
+df.plot.scatter(x='area', y='perimeter')
 #
 # TODO: Create a 2d scatter plot that graphs the
 # groove and asymmetry features
 # 
 # .. your code here ..
-
-
+df.plot.scatter(x='groove', y='asymmetry')
 #
 # TODO: Create a 2d scatter plot that graphs the
 # compactness and width features
 # 
 # .. your code here ..
-
-
+df.plot.scatter(x='compactness', y='width')
 
 # BONUS TODO:
 # After completing the above, go ahead and run your program
 # Check out the results, and see what happens when you add
 # in the optional display parameter marker with values of
 # either '^', '.', or 'o'.
-
-
+df.plot.scatter(x='groove', y='asymmetry',marker='^')
+df.plot.scatter(x='groove', y='asymmetry',marker='o')
 plt.show()
 
 
