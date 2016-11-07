@@ -8,7 +8,7 @@ matplotlib.style.use('ggplot')
 
 
 # Do * NOT * alter this line, until instructed!
-scaleFeatures = False
+scaleFeatures = True
 
 
 # TODO: Load up the dataset and remove any and all
@@ -23,7 +23,7 @@ new_df = original_df.dropna()
 # Create some color coded labels; the actual label feature
 # will be removed prior to executing PCA, since it's unsupervised.
 # You're only labeling by color so you can see the effects of PCA
-labels = ['red' if i=='ckd' else 'green' for i in df.classification]
+labels = ['red' if i=='ckd' else 'green' for i in new_df.classification]
 
 
 # TODO: Use an indexer to select only the following columns:
