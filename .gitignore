@@ -9,6 +9,8 @@
 
 ### Rails ###
 *ipynb_checkpoints
+*.pyc
+
 *.rbc
 capybara-*.html
 .rspec

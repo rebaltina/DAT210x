@@ -18,7 +18,7 @@ matplotlib.style.use('ggplot')
 
 
 # Load up the scanned armadillo
-plyfile = PlyData.read('Datasets/stanford_armadillo.ply')
+plyfile = PlyData.read('c:/Users/User/workspace/DAT210x/Module4/Datasets/stanford_armadillo.ply')
 armadillo = pd.DataFrame({
   'x':plyfile['vertex']['z'][::reduce_factor],
   'y':plyfile['vertex']['x'][::reduce_factor],
@@ -33,16 +33,19 @@ def do_PCA(armadillo):
   # Then, train your PCA on the armadillo dataframe. Finally,
   # drop one dimension (reduce it down to 2D) and project the
   # armadillo down to the 2D principal component feature space.
-  #
+  from sklearn.decomposition import PCA
+  pca = PCA(n_components=2)
+  pca.fit(armadillo)
+  T = pca.transform(armadillo)
+  return T
+  
   # NOTE: Be sure to RETURN your projected armadillo! 
   # (This projection is actually stored in a NumPy NDArray and
   # not a Pandas dataframe, which is something Pandas does for
   # you automatically. =)
   #
   # .. your code here ..
-
-  return None
-
+do_PCA(armadillo)
 
 def do_RandomizedPCA(armadillo):
   #
@@ -59,9 +62,12 @@ def do_RandomizedPCA(armadillo):
   #
   # .. your code here ..
 
-  return None
-
-
+  from sklearn.decomposition import RandomizedPCA
+  pca = RandomizedPCA(n_components=2)
+  pca.fit(armadillo)
+  T = pca.transform(armadillo)
+  return T
+do_RandomizedPCA(armadillo) 
 
 # Render the Original Armadillo
 fig = plt.figure()
