@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 import matplotlib.pyplot as plt
 import matplotlib
@@ -10,9 +11,6 @@ def showandtell(title=None):
   plt.show()
   exit()
 
-
-
-
 #
 # INFO: This dataset has call records for 10 users tracked over the course of 3 years.
 # Your job is to find out where the users likely live and work at!
@@ -23,26 +21,31 @@ def showandtell(title=None):
 # Convert the date using pd.to_datetime, and the time using pd.to_timedelta
 #
 # .. your code here ..
-
-
+df=pd.read_csv('c:/Users/User/workspace/DAT210x/Module5/Datasets/CDR.csv')
+df.dtypes
+ordered_direction=['Incoming','Missed']
+df.Direction=df.Direction.astype("category", ordered=True, categories=ordered_direction).cat.codes
+df.CallDate=pd.to_datetime(df.CallDate)
+df.CallTime=pd.to_timedelta(df.CallTime)
 #
 # TODO: Get a distinct list of "In" phone numbers (users) and store the values in a
 # regular python list.
 # Hint: https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.tolist.html
 #
 # .. your code here ..
-
+In = df['In'].unique().tolist()
 
 # 
 # TODO: Create a slice called user1 that filters to only include dataset records where the
 # "In" feature (user phone number) is equal to the first number on your unique list above
 #
 # .. your code here ..
-
+user1=df.loc[df['In'] == In[0]]
+     
 
 # INFO: Plot all the call locations
 user1.plot.scatter(x='TowerLon', y='TowerLat', c='gray', alpha=0.1, title='Call Locations')
-showandtell()  # Comment this line out when you're ready to proceed
+#showandtell()  # Comment this line out when you're ready to proceed
 
 
 #
@@ -68,7 +71,7 @@ showandtell()  # Comment this line out when you're ready to proceed
 # only examining records that came in on weekends (sat/sun).
 #
 # .. your code here ..
-
+user1=user1[(user1['DOW'] == 'Sat') | (user1['DOW'] == 'Sun')]
 
 #
 # TODO: Further filter it down for calls that are came in either before 6AM OR after 10pm (22:00:00).
@@ -79,14 +82,14 @@ showandtell()  # Comment this line out when you're ready to proceed
 # slice, print out its length:
 #
 # .. your code here ..
-
-
+user1=user1[(user1['CallTime'] < '06:00:00') | (user1['CallTime'] > '22:00:00')]
+len(user1)
 #
 # INFO: Visualize the dataframe with a scatter plot as a sanity check. Since you're familiar
 # with maps, you know well that your X-Coordinate should be Longitude, and your Y coordinate
 # should be the tower Latitude. Check the dataset headers for proper column feature names.
 # https://en.wikipedia.org/wiki/Geographic_coordinate_system#Geographic_latitude_and_longitude
-#
+user1.head()
 # At this point, you don't yet know exactly where the user is located just based off the cell
 # phone tower position data; but considering the below are for Calls that arrived in the twilight
 # hours of weekends, it's likely that wherever they are bunched up is probably near where the
@@ -95,9 +98,7 @@ fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.scatter(user1.TowerLon,user1.TowerLat, c='g', marker='o', alpha=0.2)
 ax.set_title('Weekend Calls (<6am or >10p)')
-showandtell()  # TODO: Comment this line out when you're ready to proceed
-
-
+#showandtell()  # TODO: Comment this line out when you're ready to proceed
 
 #
 # TODO: Run K-Means with a K=1. There really should only be a single area of concentration. If you
@@ -114,9 +115,17 @@ showandtell()  # TODO: Comment this line out when you're ready to proceed
 # Hint: Make sure you graph the CORRECT coordinates. This is part of your domain expertise.
 #
 # .. your code here ..
-
-
-showandtell()  # TODO: Comment this line out when you're ready to proceed
+#user1= pd.concat([user1['TowerLat'] , user1['TowerLon']], axis=1) 
+from sklearn.cluster import KMeans
+kmeans = KMeans(n_clusters=1)
+kmeans.fit(user1[['TowerLat','TowerLon']])
+centroids = kmeans.cluster_centers_
+print(centroids)
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.scatter(user1.TowerLat, user1.TowerLon, c='g', marker='o', alpha=0.2)
+ax.scatter(centroids[:,0], centroids[:,1], marker='x', c='red', alpha=0.5, linewidths=3, s=169)
+#showandtell()  # TODO: Comment this line out when you're ready to proceed
 
 
 
@@ -125,4 +134,11 @@ showandtell()  # TODO: Comment this line out when you're ready to proceed
 # locations. You might want to use a for-loop, unless you enjoy typing.
 #
 # .. your code here ..
-
+approx_home_loc=[]
+for i in In:
+    user=df[df['In'] == i]
+    user=user[(user['DOW'] == 'Sat') | (user1['DOW'] == 'Sun')]    
+    user=user[(user['CallTime'] < '06:00:00') | (user['CallTime'] > '22:00:00')]
+    kmeans = KMeans(n_clusters=1)
+    kmeans.fit(user[['TowerLat','TowerLon']])
+    approx_home_loc.append(kmeans.cluster_centers_)
