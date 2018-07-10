@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 
-#
+
 # TODO: Parameters to play around with
 PLOT_TYPE_TEXT = False    # If you'd like to see indices
 PLOT_VECTORS = True       # If you'd like to see your original features in P.C.-Space
@@ -38,6 +38,7 @@ def drawVectors(transformed_features, components_, columns, plt):
   print "Projected Features by importance:\n", important_features
 
   ax = plt.axes()
+
 
   for i in range(num_columns):
     # Use an arrow to project each original feature as a
