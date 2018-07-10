@@ -1,11 +1,14 @@
+ 
+import random, math
 import pandas as pd
 import numpy as np
-import matplotlib
+import scipy.io
+
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
-
-matplotlib.style.use('ggplot') # Look Pretty
-
-
+from sklearn.cross_validation import train_test_split
+from sklearn import preprocessing
+from sklearn.decomposition import PCA
 def drawLine(model, X_test, y_test, title):
   # This convenience method will take care of plotting your
   # test observations, comparing them to the regression line,
@@ -34,7 +37,8 @@ def drawLine(model, X_test, y_test, title):
 # spread sheet application
 #
 # .. your code here ..
-
+X=pd.read_csv('c:/Users/User/workspace/DAT210x/Module5/Datasets/life_expectancy.csv', sep='\s+')
+X.describe()
 
 #
 # TODO: Create your linear regression model here and store it in a
@@ -42,6 +46,8 @@ def drawLine(model, X_test, y_test, title):
 # with it yet:
 #
 # .. your code here ..
+from sklearn import linear_model
+model = linear_model.LinearRegression()
 
 
 
@@ -54,9 +60,12 @@ def drawLine(model, X_test, y_test, title):
 # of this document before proceeding.
 #
 # .. your code here ..
+selected_X=X[X.Year<1986]
+y_train=selected_X.WhiteMale
+X_train=selected_X.Year
 
-
-
+y_train = y_train.reshape(-1,1)
+X_train = X_train.reshape(-1,1)
 #
 # TODO: Train your model then pass it into drawLine with your training
 # set and labels. You can title it "WhiteMale". drawLine will output
@@ -66,9 +75,10 @@ def drawLine(model, X_test, y_test, title):
 # 2030 and 2045 extrapolation.
 #
 # .. your code here ..
-
-
-#
+model.fit(X_train, y_train)
+drawLine(model, X_train, y_train, 'WhiteMale')
+X_train.shape
+y_train.shape
 # TODO: Print the actual 2014 WhiteMale life expectancy from your
 # loaded dataset
 #
@@ -83,8 +93,10 @@ def drawLine(model, X_test, y_test, title):
 # BlackFemale life expectancy
 #
 # .. your code here ..
-
-
+y_train=selected_X.BlackFemale
+y_train = y_train.reshape(-1,1)
+model.fit(X_train, y_train)
+drawLine(model, X_train, y_train, 'BlackFemales')
 
 #
 # TODO: Lastly, print out a correlation matrix for your entire
@@ -93,6 +105,13 @@ def drawLine(model, X_test, y_test, title):
 # the course
 #
 # .. your code here ..
+import matplotlib.pyplot as plt
+X.corr()
+plt.imshow(X.corr(), cmap=plt.cm.Blues, interpolation='nearest')
+plt.colorbar()
+tick_marks = [i for i in range(len(X.columns))]
+plt.xticks(tick_marks, X.columns, rotation='vertical')
+plt.yticks(tick_marks, X.columns)
 
 plt.show()
 

@@ -1,3 +1,4 @@
+
 import pandas as pd
 import numpy as np
 import matplotlib
@@ -5,7 +6,11 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 matplotlib.style.use('ggplot') # Look Pretty
-
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+from sklearn.cross_validation import train_test_split
+from sklearn import preprocessing
+from sklearn.decomposition import PCA
 
 
 def drawLine(model, X_test, y_test, title, R2):
@@ -84,8 +89,8 @@ def drawPlane(model, X_test, y_test, title, R2):
 # called X:
 #
 # .. your code here ..
-
-
+X=pd.read_csv('c:/Users/User/workspace/DAT210x/Module5/Datasets/College.csv', index_col=0)
+X.head()
 #
 # INFO: This line isn't necessary for your purposes; but we'd just
 # like to show you an additional way to encode features directly.
@@ -104,7 +109,8 @@ X.Private = X.Private.map({'Yes':1, 'No':0})
 #
 # .. your code here ..
 
-
+from sklearn import linear_model
+model = linear_model.LinearRegression()
 
 
 #
@@ -120,18 +126,18 @@ X.Private = X.Private.map({'Yes':1, 'No':0})
 # a random_state of 7.
 #
 # .. your code here ..
-
+room_board_enrolled_students = X[["Room.Board","Enroll"]]
+accepted_studentes = X.Accept.reshape(-1,1)
+X_train, X_test, y_train, y_test = train_test_split(room_board_enrolled_students, accepted_studentes, test_size=0.30, random_state=7)
 #
 # TODO: Fit and score your model appropriately. Store the score in the
 # score variable.
 #
 # .. your code here ..
-
+model.fit(X_train, y_train)
+score=model.score(X_test, y_test)
 # INFO: We'll take it from here, buddy:
 drawLine(model, X_test, y_test, "Accept(Room&Board)", score)
-
-
-
 
 # 
 # TODO: Duplicate the process above; this time, model the number of

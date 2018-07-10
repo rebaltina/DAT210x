@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 
-#
+
 # TODO: Parameters to play around with
 PLOT_TYPE_TEXT = False    # If you'd like to see indices
 PLOT_VECTORS = True       # If you'd like to see your original features in P.C.-Space
@@ -39,6 +39,7 @@ def drawVectors(transformed_features, components_, columns, plt):
 
   ax = plt.axes()
 
+
   for i in range(num_columns):
     # Use an arrow to project each original feature as a
     # labeled vector on your principal component axes
@@ -61,6 +62,11 @@ def doKMeans(data, clusters=0):
   # centers and the labels
   #
   # .. your code here ..
+  
+            
+  model = KMeans(n_clusters=clusters)
+  model.fit(data)
+  
   return model.cluster_centers_, model.labels_
 
 
@@ -71,7 +77,8 @@ def doKMeans(data, clusters=0):
 # on it.
 #
 # .. your code here ..
-
+df=pd.read_csv('c:/Users/User/workspace/DAT210x/Module5/Datasets/Wholesale customers data.csv')
+df.fillna(0)
 #
 # TODO: As instructed, get rid of the 'Channel' and 'Region' columns, since
 # you'll be investigating as if this were a single location wholesaler, rather
@@ -79,6 +86,7 @@ def doKMeans(data, clusters=0):
 # KMeans to examine and give weight to them.
 #
 # .. your code here ..
+df = df.drop(labels=['Channel', 'Region'], axis=1)
 
 
 #
@@ -87,7 +95,10 @@ def doKMeans(data, clusters=0):
 # .describe() method, or even by using the built-in pandas df.plot.hist()
 #
 # .. your code here ..
-
+df.describe()
+#fig = plt.figure()
+#df.Milk.plot.hist(bins=50)
+#df.Detergents_Paper.plot.hist(bins=50,title='Milk and Detergents_Paper')
 
 #
 # INFO: Having checked out your data, you may have noticed there's a pretty big gap
@@ -191,6 +202,7 @@ T = df # No Change
 
 # Do KMeans
 n_clusters = 3
+from sklearn.cluster import KMeans
 centroids, labels = doKMeans(T, n_clusters)
 
 
@@ -199,6 +211,7 @@ centroids, labels = doKMeans(T, n_clusters)
 # is good. Print them out before you transform them into PCA space for viewing
 #
 # .. your code here ..
+print centroids
 
 
 # Do PCA *after* to visualize the results. Project the centroids as well as 

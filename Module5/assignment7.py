@@ -1,3 +1,17 @@
+
+import random, math
+import pandas as pd
+import numpy as np
+import scipy.io
+
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+from sklearn.cross_validation import train_test_split
+from sklearn import preprocessing
+from sklearn.decomposition import PCA
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import manifold
+
 # If you'd like to try this lab with PCA instead of Isomap,
 # as the dimensionality reduction technique:
 Test_PCA = True
@@ -58,8 +72,7 @@ def plotDecisionBoundary(model, X, y):
 # Be sure to verify the rows line up by looking at the file in a text editor.
 #
 # .. your code here ..
-
-
+df=pd.read_csv('c:/Users/User/workspace/DAT210x/Module5/Datasets/breast-cancer-wisconsin.data', names=['sample', 'thickness', 'size', 'shape', 'adhesion', 'epithelial', 'nuclei', 'chromatin', 'nucleoli', 'mitoses', 'status'])
 
 # 
 # TODO: Copy out the status column into a slice, then drop it from the main
@@ -67,15 +80,18 @@ def plotDecisionBoundary(model, X, y):
 # us with any machine learning power.
 #
 # .. your code here ..
-
-
-
+status=df['status']
+df=df.drop('status',1)
+df=df.drop('sample',1)
 #
 # TODO: With the labels safely extracted from the dataset, replace any nan values
 # with the mean feature / column value
 #
 # .. your code here ..
-
+df.nuclei.unique()
+df.nuclei = df.nuclei.replace('?',np.NaN)
+df.nuclei = pd.to_numeric(df.nuclei)
+df.nuclei = df.nuclei.fillna(df.nuclei.mean())
 
 
 #
@@ -84,7 +100,7 @@ def plotDecisionBoundary(model, X, y):
 # the test_size at 0.5 (50%).
 #
 # .. your code here ..
-
+data_train, data_test, label_train, label_test = train_test_split(df, status, test_size=0.5, random_state=7)
 
 
 
@@ -95,7 +111,14 @@ def plotDecisionBoundary(model, X, y):
 # of the dataset, post transformation.
 #
 # .. your code here ..
-
+#scaling = preprocessing.StandardScaler()
+#scaling = preprocessing.MinMaxScaler()
+scaling = preprocessing.MaxAbsScaler()
+#scaling = preprocessing.RobustScaler()
+#scaling = preprocessing.Normalizer()
+scaling.fit(data_train)
+data_test = scaling.transform(data_test)
+data_train = scaling.transform(data_train)
 
 
 
@@ -109,8 +132,10 @@ if Test_PCA:
   # You should reduce down to two dimensions.
   #
   # .. your code here ..
-
-  
+  model = PCA(n_components=2)
+  model.fit(data_train)
+  T_pca_train = model.transform(data_train)
+  T_pca_test = model.transform(data_test)
 
 else:
   print "Computing 2D Isomap Manifold"
@@ -120,7 +145,11 @@ else:
   # You should reduce down to two dimensions.
   #
   # .. your code here ..
-  
+  model = manifold.Isomap(n_neighbors=5, n_components=2)
+  model.fit(data_train)
+  data_train = model.transform(data_train)
+  data_test = model.transform(data_test)
+
 
 
 
@@ -130,6 +159,9 @@ else:
 # back into the variables themselves.
 #
 # .. your code here ..
+model.fit(data_train)
+data_train = model.transform(data_train)
+data_test = model.transform(data_test)
 
 
 
@@ -142,7 +174,8 @@ else:
 # parameter affects the results.
 #
 # .. your code here ..
-
+knmodel = KNeighborsClassifier(n_neighbors=3, weights='distance')
+knmodel.fit(data_train, label_train) 
 
 
 #
@@ -161,6 +194,6 @@ else:
 # TODO: Calculate + Print the accuracy of the testing set
 #
 # .. your code here ..
+knmodel.score(data_test, label_test)
 
-
-plotDecisionBoundary(knmodel, X_test, y_test)
+plotDecisionBoundary(knmodel, data_test, label_test)

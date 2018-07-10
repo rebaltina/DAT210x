@@ -1,4 +1,4 @@
-import numpy as np
+ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
@@ -51,46 +51,45 @@ def plotDecisionBoundary(model, X, y):
 # compare it to the file you loaded in a text editor. Make sure you're
 # loading your data properly--don't fail on the 1st step!
 #
-# .. your code here ..
-
-
+X=pd.read_csv('c:/Users/User/workspace/DAT210x/Module5/Datasets/wheat.data')
+X.head()
 
 #
 # TODO: Copy the 'wheat_type' series slice out of X, and into a series
 # called 'y'. Then drop the original 'wheat_type' column from the X
 #
 # .. your code here ..
-
-
+y=X.wheat_type
+X=X.drop(labels=['wheat_type','id'], axis=1)
 
 # TODO: Do a quick, "ordinal" conversion of 'y'. In actuality our
 # classification isn't ordinal, but just as an experiment...
 #
 # .. your code here ..
-
-
+ordered_y=['kama', 'canadian', 'rosa']
+y=y.astype("category",ordered=True,categories=ordered_y).cat.codes
 
 #
 # TODO: Basic nan munging. Fill each row's nans with the mean of the feature
 #
 # .. your code here ..
-
-
-
-#
+for column in X:
+    X[column] = X[column].fillna( X[column].mean() )
+#   return 
 # TODO: Split X into training and testing data sets using train_test_split().
 # INFO: Use 0.33 test size, and use random_state=1. This is important
 # so that your answers are verifiable. In the real world, you wouldn't
 # specify a random_state.
 #
 # .. your code here ..
-
-
-
+from sklearn.cross_validation import train_test_split
+data_train, data_test, label_train, label_test = train_test_split(X, y, test_size=0.33, random_state=1)
 # 
 # TODO: Create an instance of SKLearn's Normalizer class and then train it
 # using its .fit() method against your *training* data.
-#
+preprocessor = preprocessing.Normalizer()
+preprocessor=preprocessor.fit(data_train)
+
 # NOTE: The reason you only fit against your training data is because in a
 # real-world situation, you'll only have your training data to train with!
 # In this lab setting, you have both train+test data; but in the wild,
@@ -104,7 +103,8 @@ def plotDecisionBoundary(model, X, y):
 #
 # TODO: With your trained pre-processor, transform both your training AND
 # testing data.
-#
+T_data_train =  preprocessor.transform(data_train)
+T_data_test = preprocessor.transform(data_test)
 # NOTE: Any testing data has to be transformed with your preprocessor
 # that has ben fit against your training data, so that it exist in the same
 # feature-space as the original data used to train your models.
@@ -124,7 +124,11 @@ def plotDecisionBoundary(model, X, y):
 # boundary in 2D would be if your KNN algo ran in 2D as well:
 #
 # .. your code here ..
-
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2)
+pca.fit(T_data_train)
+T_pca_train = pca.transform(T_data_train)
+T_pca_test = pca.transform(T_data_test)
 
 
 
@@ -135,12 +139,14 @@ def plotDecisionBoundary(model, X, y):
 # your labels.
 #
 # .. your code here ..
-
+from sklearn.neighbors import KNeighborsClassifier
+knn = KNeighborsClassifier(n_neighbors=9)
+knn.fit(T_pca_train, label_train) 
 
 
 
 # HINT: Ensure your KNeighbors classifier object from earlier is called 'knn'
-plotDecisionBoundary(knn, X_train, y_train)
+plotDecisionBoundary(knn, T_pca_train, label_train)
 
 
 #------------------------------------
@@ -152,7 +158,9 @@ plotDecisionBoundary(knn, X_train, y_train)
 # .score will take care of running your predictions for you automatically.
 #
 # .. your code here ..
-
+from sklearn.metrics import accuracy_score
+predictions = knn.predict(T_pca_test) 
+accuracy_score(label_train, predictions)
 
 
 #
