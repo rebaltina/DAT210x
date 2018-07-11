@@ -4,7 +4,6 @@ Created on Sat Dec 24 15:28:10 2016
 
 @author: User
 """
-
 import random, math
 
 import scipy.io
